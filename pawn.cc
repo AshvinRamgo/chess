@@ -5,83 +5,95 @@
 #include "queen.h"
 #include "knight.h"
 #include "bishop.h"
+#include "board.h" 
 
-Pawn::Pawn(char color) : Piece(color, 'P'), hasMoved(false), lastMove("") {}
+Pawn::Pawn(char color) : Piece(color, 'P'), hasMoved(false) {}
 
-bool Pawn::move(std::string destination, char promotion) {
-    // Calculate the difference in rows and columns between the current position and the destination
-    int rowDiff = destination[1] - position[1];
-    int colDiff = destination[0] - position[0];
+bool Pawn::move(std::string destination) {
+    int dx = destination[0] - position[0];
+    int dy = destination[1] - position[1];
 
-    // Check if the move is valid for a pawn
     if (color == 'W') {
-        if ((rowDiff == 1 && colDiff == 0 && board[destination] == nullptr) || 
-            (rowDiff == 1 && abs(colDiff) == 1 && board[destination] != nullptr && board[destination]->color == 'B')) {
-            position = destination;
-            hasMoved = true;
-            lastMove = destination;
-            return true;
-        } else if (!hasMoved && rowDiff == 2 && colDiff == 0 && board[destination] == nullptr) {
-            position = destination;
-            hasMoved = true;
-            lastMove = destination;
-            return true;
-        }
-    } else { // color == 'B'
-        if ((rowDiff == -1 && colDiff == 0 && board[destination] == nullptr) || 
-            (rowDiff == -1 && abs(colDiff) == 1 && board[destination] != nullptr && board[destination]->color == 'W')) {
-            position = destination;
-            hasMoved = true;
-            lastMove = destination;
-            return true;
-        } else if (!hasMoved && rowDiff == -2 && colDiff == 0 && board[destination] == nullptr) {
-            position = destination;
-            hasMoved = true;
-            lastMove = destination;
-            return true;
-        }
+        dy = -dy;  // Adjust direction for white pawns
     }
 
-    // Check for en passant
-    if (abs(rowDiff) == 1 && abs(colDiff) == 1 && board[destination] == nullptr) {
-        // Get the position of the pawn that would be captured en passant
-        std::string enPassantPawn = destination;
-        enPassantPawn[1] = position[1]; // Same row as the current position
+    if (dy == 1 && dx == 0 && !hasMoved) {
+        hasMoved = true;
+        return true;
+    }
 
-        // Check if the last move of the pawn at the enPassantPawn position was a two-square move
-        if (board[enPassantPawn] != nullptr && board[enPassantPawn]->color != color && 
-            board[enPassantPawn]->lastMove == enPassantPawn && abs(board[enPassantPawn]->position[1] - enPassantPawn[1]) == 2) {
-            // Capture the pawn en passant
-            delete board[enPassantPawn];
-            board[enPassantPawn] = nullptr;
-            position = destination;
-            lastMove = destination;
+    if (dy == 2 && dx == 0 && !hasMoved) {
+        hasMoved = true;
+        return true;
+    }
+
+    if (dy == 1 && abs(dx) == 1) {  // Capture move
+        // Call enPassant method here
+        Piece* lastMovedPiece = Board::getLastMovedPiece();  // Assume that there is a method in the Board class for getting the last moved piece
+        if (enPassant(destination, lastMovedPiece)) {
+            Board::replacePiece(destination, nullptr);  // Capture the last moved piece
             return true;
         }
     }
 
     // Check for promotion
     if ((color == 'W' && destination[1] == '8') || (color == 'B' && destination[1] == '1')) {
-    // Replace the pawn with a new piece of the chosen type
-    delete this;
-    if (promotion == 'R') {
-        board[position] = new Rook(color);
-    } else if (promotion == 'N') {
-        board[position] = new Knight(color);
-    } else if (promotion == 'B') {
-        board[position] = new Bishop(color);
-    } else if (promotion == 'Q') {
-        board[position] = new Queen(color);
-    } else { // promotion == 'K'
-        board[position] = new King(color);
+        // Call promotion method here
+        char pieceType = 'Q';  // Assume that the pawn is always promoted to a queen for now
+        promotion(pieceType);
     }
-    return true;
-}
 
-
-    // If none of the conditions are met, the move is invalid
     return false;
 }
 
+
+bool Pawn::enPassant(std::string destination, Piece* lastMovedPiece) {
+    // Check if the last moved piece is a pawn of the opposite color
+    if (lastMovedPiece && lastMovedPiece->getType() == 'P' && lastMovedPiece->getColor() != this->getColor()) {
+        // Check if the last moved piece moved two squares forward from its starting position
+        // This will require access to the last moved piece's previous position and the board state
+        // If the conditions for en passant are met, capture the last moved piece and return true
+        int dx = lastMovedPiece->getPosition()[0] - position[0];
+        int dy = lastMovedPiece->getPosition()[1] - position[1];
+
+        if (abs(dy) == 2 && dx == 0) {
+            // The last moved piece moved two squares forward
+            // Now check if the destination square is the skipped square
+            if (destination == lastMovedPiece->getPosition()) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void Pawn::promotion(char pieceType) {
+    Piece* newPiece;
+    switch (pieceType) {
+        case 'Q':
+            newPiece = new Queen(color);
+            break;
+        case 'R':
+            newPiece = new Rook(color);
+            break;
+        case 'B':
+            newPiece = new Bishop(color);
+            break;
+        case 'N':
+            newPiece = new Knight(color);
+            break;
+        default:
+            return;  // Invalid piece type
+    }
+    // Assume that there is a method in the Board class for replacing a piece
+    Board::replacePiece(position, newPiece);
+}
+
+void Board::replacePiece(std::string position, Piece* newPiece) {
+    int row = position[1] - '1';
+    int col = position[0] - 'a';
+    delete board[row][col];
+    board[row][col] = newPiece;
+}
 
 

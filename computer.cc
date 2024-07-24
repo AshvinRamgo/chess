@@ -30,8 +30,7 @@ std::vector<std::string> Computer::generateAllMoves(Board *board, char color) {
     }
     return allMoves;
 }
-es;
-}
+
 
 // Helper function to evaluate a move
 int Computer::evaluateMove(Board *board, std::string move, char color) {

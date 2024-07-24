@@ -180,3 +180,12 @@ void Board::undo() {
         // Implement logic to undo the last move
     }
 }
+
+
+void Board::replacePiece(std::string position, Piece* newPiece) {
+    int row = position[1] - '1';
+    int col = position[0] - 'a';
+    delete board[row][col];
+    board[row][col] = newPiece;
+}
+
