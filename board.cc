@@ -51,7 +51,7 @@ void Board::initialize() {
 }
 
 std::string Board::view(const std::string& position) const {
-    int row = position[1] - '1';
+    int row = '8' - position[1];
     int col = position[0] - 'a';
     if (board[row][col]) {
         return std::string(1, board[row][col]->getColor()) + board[row][col]->getType();
