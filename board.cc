@@ -80,7 +80,7 @@ bool Board::isSquareUnderAttack(const std::string& position, char attackerColor)
     int row = '8' - position[1];
     int col = position[0] - 'a';
 
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
             if (board[i][j] && board[i][j]->getColor() == attackerColor) {
                 std::string currentPos = std::string(1, 'a' + j) + std::to_string(i + 1);
@@ -101,7 +101,7 @@ bool Board::check(const std::string& kingPosition) const {
 
 bool Board::checkmate(char kingColor) const {
     std::string kingPosition;
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
             if (board[i][j] && board[i][j]->getColor() == kingColor && board[i][j]->getType() == 'K') {
                 kingPosition = std::string(1, 'a' + j) + std::to_string(i + 1);
@@ -114,11 +114,11 @@ bool Board::checkmate(char kingColor) const {
     }
 
     // Check if any legal move can remove the check
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
             if (board[i][j] && board[i][j]->getColor() == kingColor) {
                 std::string currentPos = std::string(1, 'a' + j) + std::to_string(i + 1);
-                for (int r = 0; r < 8; ++r) {
+                for (int r = 7; r >= 0; --r) {
                     for (int c = 0; c < 8; ++c) {
                         std::string newPos = std::string(1, 'a' + c) + std::to_string(r + 1);
                         Piece* temp = board[r][c];
@@ -143,7 +143,7 @@ bool Board::checkmate(char kingColor) const {
 
 bool Board::stalemate(char kingColor) const {
     std::string kingPosition;
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
             if (board[i][j] && board[i][j]->getColor() == kingColor && board[i][j]->getType() == 'K') {
                 kingPosition = std::string(1, 'a' + j) + std::to_string(i + 1);
@@ -156,10 +156,10 @@ bool Board::stalemate(char kingColor) const {
     }
 
     // Check if there are any legal moves available for the king's color
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
             if (board[i][j] && board[i][j]->getColor() == kingColor) {
-                for (int r = 0; r < 8; ++r) {
+                for (int r = 7; r >= 0; --r) {
                     for (int c = 0; c < 8; ++c) {
                         std::string newPos = std::string(1, 'a' + c) + std::to_string(r + 1);
                         if (board[i][j]->move(newPos)) {
@@ -188,4 +188,3 @@ void Board::replacePiece(std::string position, Piece* newPiece) {
     delete board[row][col];
     board[row][col] = newPiece;
 }
-
