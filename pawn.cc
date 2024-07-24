@@ -85,15 +85,7 @@ void Pawn::promotion(char pieceType) {
         default:
             return;  // Invalid piece type
     }
-    // Assume that there is a method in the Board class for replacing a piece
     Board::replacePiece(position, newPiece);
-}
-
-void Board::replacePiece(std::string position, Piece* newPiece) {
-    int row = position[1] - '1';
-    int col = position[0] - 'a';
-    delete board[row][col];
-    board[row][col] = newPiece;
 }
 
 

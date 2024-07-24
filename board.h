@@ -16,6 +16,7 @@ class Board {
 private:
     static Piece* board[8][8];
     std::vector<std::string> move_history;
+    Piece* lastMovedPiece;  
 
     bool isSquareUnderAttack(const std::string& position, char attackerColor) const;
 
@@ -30,7 +31,8 @@ public:
     bool checkmate(char kingColor) const;
     bool stalemate(char kingColor) const;
     void undo();
-    void replacePiece(std::string position, Piece* newPiece);  // New method
+    void replacePiece(std::string position, Piece* newPiece);
+    Piece* getLastMovedPiece() const {return lastMovedPiece;}
 };
 
 #endif
