@@ -30,6 +30,7 @@ public:
     bool checkmate(char kingColor) const;
     bool stalemate(char kingColor) const;
     void undo();
+    void replacePiece(std::string position, Piece* newPiece);  // New method
 };
 
 #endif
