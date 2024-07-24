@@ -50,7 +50,7 @@ void Board::initialize() {
     }
 }
 
-std::string Board::view(const std::string& position) const {
+std::string Board::view(const std::string& position) const { 
     int row = '8' - position[1];
     int col = position[0] - 'a';
     if (board[row][col]) {
@@ -60,9 +60,9 @@ std::string Board::view(const std::string& position) const {
 }
 
 bool Board::move(const std::string& before, const std::string& after, char promotion) {
-    int before_row = before[1] - '1';
+    int before_row = '8' - before[1];
     int before_col = before[0] - 'a';
-    int after_row = after[1] - '1';
+    int after_row = '8' - after[1];
     int after_col = after[0] - 'a';
 
     if (board[before_row][before_col] && board[before_row][before_col]->move(after)) {
@@ -77,7 +77,7 @@ bool Board::move(const std::string& before, const std::string& after, char promo
 
 bool Board::isSquareUnderAttack(const std::string& position, char attackerColor) const {
     // Iterate over all pieces of the specified attacker color and check if any of them can move to the specified position
-    int row = position[1] - '1';
+    int row = '8' - position[1];
     int col = position[0] - 'a';
 
     for (int i = 0; i < 8; ++i) {
