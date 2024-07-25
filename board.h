@@ -14,6 +14,7 @@ private:
     bool isSquareUnderAttack(const std::string& position, char attackerColor) const;
 
 public:
+    char player;
     Board();
     ~Board();
 

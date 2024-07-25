@@ -17,8 +17,10 @@ bool Pawn::move(std::string position, std::string destination) {
         dy = -dy;  // Adjust direction for white pawns
     }
 
-    if (dy == 1 && dx == 0 && !hasMoved) {
-        hasMoved = true;
+    if (dy == 1 && dx == 0) {
+        if (!hasMoved) {
+            hasMoved = true;
+        }
         return true;
     }
 

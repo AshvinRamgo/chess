@@ -81,7 +81,7 @@ bool Board::move(const std::string& before, const std::string& after, char promo
 
 
     Piece* toMove = board[before_row][before_col];
-    if (board[before_row][before_col] && board[before_row][before_col]->move(before, after) && (board[after_row][after_col] == nullptr || ((board[before_row][before_col]->getColor() != board[after_row][after_col]->getColor())))) {
+    if (board[before_row][before_col] && board[before_row][before_col]->getColor() == (player - 'a' + 'A') && board[before_row][before_col]->move(before, after) && (!board[after_row][after_col] || board[before_row][before_col]->getColor() != board[after_row][after_col]->getColor())) {
         /*Piece* temp = board[after_row][after_col];                     // A simpler version is wrote below
         board[after_row][after_col] = board[before_row][before_col];     // note the "delete temp" below is part of this"
         board[before_row][before_col] = temp;

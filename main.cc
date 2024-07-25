@@ -50,7 +50,7 @@ int main() {
     int wwin = 0;
 	
     // Other variables
-    char player = 'w';
+    chessBoard.player = 'w';
 
 
     // implement prompts last
@@ -61,27 +61,30 @@ int main() {
         std::string input = "";
         while (std::cin >> input) {
             if (input == "game") {
-                // Set up the game
-		   player = 'w';
+                // Set up the game (unimplemented)
+		        chessBoard.player = 'w';
+                /*
                 std::string p1 = "";
                 std::string p2 = "";
                 std::cin >> p1;
                 std::cin >> p2;
+                */
+                graphicalDisplay.draw_board();
+                textDisplay.render();
                 // chessBoard.setPlayers(p1, p2);
-            }
-            else if (input == "move"){
-		   std::string pos, dest;
-		   char promotion = 0;
-		   std::cin >> pos >> dest;
-		   if (std::cin.peek() == ' '){
-			std::cin >> promotion;
-		   }
-		   if (!chessBoard.move(pos, dest, promotion)){
-			std::cout << "invalid move" << std::endl;
-		   } else {
-			// render	
-			textDisplay.render();
-			graphicalDisplay.render(pos[1] - '0', pos[0] - 'a' + 1, dest[1] - '0', dest[0] - 'a' + 1);
+            } else if (input == "move"){
+		        std::string pos, dest;
+		        char promotion = 0;
+		        std::cin >> pos >> dest;
+		        if (std::cin.peek() == ' '){
+			    std::cin >> promotion;
+		        }
+		        if (!chessBoard.move(pos, dest, promotion)){
+			    std::cout << "invalid move" << std::endl;
+		        } else {
+			    // render	
+			    textDisplay.render();
+			    graphicalDisplay.render(pos[1] - '0', pos[0] - 'a' + 1, dest[1] - '0', dest[0] - 'a' + 1);
 			// check for checkmate, stalemate
 			/* if (chessBoard.checkmate(next(player) + 'A' - 'a')) {
 			    if (player == 'w') {
@@ -117,9 +120,9 @@ int main() {
 			} else {
 			    player = next(player);
 			} */
-            player = next(player);
+                    chessBoard.player = next(chessBoard.player);
 			// switch players
-		   }
+		        }
             }
             else if (input == "undo") {
                 // Undo a move
@@ -127,15 +130,15 @@ int main() {
             }
             else if (input == "resign") {
                 // Resign the game
-                if (player == 'b') {
-                    bwin += 1;
-                }
-                else {
+                if (chessBoard.player == 'b') {
                     wwin += 1;
                 }
+                else {
+                    bwin += 1;
+                }
 	   	        // resign and display scores
-                textDisplay.resign(player);
-		        graphicalDisplay.resign(player);
+                textDisplay.resign(chessBoard.player);
+		        graphicalDisplay.resign(chessBoard.player);
 		        sleep(1); // pauses execution for 1 second from unistd.h
 		        textDisplay.score(bwin, wwin);
 		        graphicalDisplay.score(bwin, wwin);
