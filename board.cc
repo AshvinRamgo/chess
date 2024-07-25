@@ -23,6 +23,7 @@ Board::~Board() {
 
 void Board::initialize() {
     // Initialize the board with the standard starting positions
+    player = 'w';
     // Black pieces
     board[0][0] = new Rook('B', *this);
     board[0][1] = new Knight('B', *this);
@@ -57,6 +58,24 @@ void Board::initialize() {
     }
 }
 
+void Board::clear() {
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            if (board[i][j]) {
+                delete board[i][j];
+                board[i][j] = nullptr;
+            }
+        }
+    }
+}
+
+bool Board::valid(std::string pos) {
+    if (pos[0] <= 'h' && pos[0] >= 'a' && pos[1] <= '8' && pos[1] >= '1') {
+        return true;
+    }
+    return false;
+}
+
 char Board::view(const std::string& position) const { 
     int row = '8' - position[1];
     int col = position[0] - 'a';
@@ -78,6 +97,7 @@ bool Board::move(const std::string& before, const std::string& after, char promo
     int before_col = before[0] - 'a';
     int after_row = '8' - after[1];
     int after_col = after[0] - 'a';
+    
 
 
     Piece* toMove = board[before_row][before_col];
@@ -123,16 +143,12 @@ bool Board::move(const std::string& before, const std::string& after, char promo
 
 bool Board::isSquareUnderAttack(const std::string& position, char attackerColor) const {
     // Iterate over all pieces of the specified attacker color and check if any of them can move to the specified position
-    int row = '8' - position[1];
-    int col = position[0] - 'a';
-
     for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
             std::string from = "";
             from += 'a' + j;
             from += '8' - i;
             if (board[i][j] && board[i][j]->getColor() == attackerColor) {
-                std::string currentPos = std::string(1, 'a' + j) + std::to_string(i + 1);
                 if (board[i][j]->move(from, position)) {
                     return true;
                 }
@@ -142,17 +158,27 @@ bool Board::isSquareUnderAttack(const std::string& position, char attackerColor)
     return false;
 }
 
-bool Board::check(const std::string& kingPosition) const {
-    
-    char kingColor = view(kingPosition);
-    if (kingColor = 'K') {
-        kingColor = 'W';
-    } else {
-        kingColor = 'B';
+bool Board::check() {
+    std::string KingPosition = "";
+    char KingColour = ' ';
+    for (int i = 7; i >= 0; --i) {
+        for (int j = 0; j < 8; ++j) {
+            std::string from = "";
+            from += 'a' + j;
+            from += '8' - i;
+            if (board[i][j] && board[i][j]->getType() == 'K' ) {
+                KingPosition = from;
+                KingColour = 'W'; 
+            }
+            if (board[i][j] && board[i][j]->getType() == 'k' ) {
+                KingPosition = from;
+                KingColour = 'B'; 
+            }
+        }
     }
-    char attackerColor = (kingColor == 'W') ? 'B' : 'W';
-    return isSquareUnderAttack(kingPosition, attackerColor);
-}
+    char attackerColor = (KingColour == 'W') ? 'B' : 'W';
+    return isSquareUnderAttack(KingPosition, attackerColor);
+}\
 
 bool Board::checkmate(char kingColor) /*const*/ {
     std::string kingPosition;
@@ -164,7 +190,7 @@ bool Board::checkmate(char kingColor) /*const*/ {
             }
         }
     }
-    if (!check(kingPosition)) {
+    if (!check()) {
         return false;
     }
 
@@ -183,7 +209,7 @@ bool Board::checkmate(char kingColor) /*const*/ {
                         if (board[i][j]->move(from, newPos)) {
                             board[r][c] = board[i][j];
                             board[i][j] = nullptr;
-                            if (!check(kingPosition)) {
+                            if (!check()) {
                                 board[i][j] = board[r][c];
                                 board[r][c] = temp;
                                 return false;
@@ -199,7 +225,7 @@ bool Board::checkmate(char kingColor) /*const*/ {
     return true;
 }
 
-bool Board::stalemate(char kingColor) const {
+bool Board::stalemate(char kingColor) {
     std::string kingPosition;
     for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
@@ -209,7 +235,7 @@ bool Board::stalemate(char kingColor) const {
             }
         }
     }
-    if (check(kingPosition)) {
+    if (check()) {
         return false;
     }
 
@@ -243,11 +269,61 @@ void Board::undo() {
 }
 
 
-void Board::replacePiece(std::string position, Piece* newPiece) {
+bool Board::replacePiece(std::string position, char piece) {
+    if (!valid(position)) {
+        return false;
+    }
+    Piece* newPiece;
+    switch (piece) {
+        case 'P':
+            newPiece = new Pawn('W', *this);
+            break;
+        case 'K':
+            newPiece = new King('W', *this);
+            break;
+        case 'Q':
+            newPiece = new Queen('W', *this);
+            break;
+        case 'R':
+            newPiece = new Rook('W', *this);
+            break;
+        case 'B':
+            newPiece = new Bishop('W', *this);
+            break;
+        case 'N':
+            newPiece = new Knight('W', *this);
+            break;
+        case 'p':
+            newPiece = new Pawn('B', *this);
+            break;
+        case 'k':
+            newPiece = new King('B', *this);
+            break;
+        case 'q':
+            newPiece = new Queen('B', *this);
+            break;
+        case 'r':
+            newPiece = new Rook('B', *this);
+            break;
+        case 'b':
+            newPiece = new Bishop('B', *this);
+            break;
+        case 'n':
+            newPiece = new Knight('B', *this);
+            break;
+        case ' ':
+            newPiece = nullptr;
+            break;
+        default:
+            return false;
+    }
     int row = '8' - position[1];
     int col = position[0] - 'a';
-    delete board[row][col];
+    if (board[row][col]) {
+        delete board[row][col];
+    }
     board[row][col] = newPiece;
+    return true;
 }
 
 // This method assumes a valid path
@@ -284,7 +360,7 @@ bool Board::isPathClear(int startX, int startY, int endX, int endY) const {
     return true;
 }
 
-/* bool Board::isValidSetup() const {
+bool Board::isValidSetup() {
     int whiteKingCount = 0;
     int blackKingCount = 0;
 
@@ -293,7 +369,7 @@ bool Board::isPathClear(int startX, int startY, int endX, int endY) const {
             Piece* piece = board[i][j];
             if (piece) {
                 // Check for pawns on the first or last row
-                if ((i == 0  i == 7) && piece->getType() == 'P') {
+                if ((i == 0 || i == 7) && piece->getType() == 'P') {
                     return false;
                 }
 
@@ -310,7 +386,7 @@ bool Board::isPathClear(int startX, int startY, int endX, int endY) const {
     }
 
     // Check for exactly one king of each color
-    if (whiteKingCount != 1  blackKingCount != 1) {
+    if (whiteKingCount != 1 || blackKingCount != 1) {
         return false;
     }
 
@@ -329,10 +405,10 @@ bool Board::isPathClear(int startX, int startY, int endX, int endY) const {
         }
     }
 
-    if (check(whiteKingPosition) || check(blackKingPosition)) {
+    if (check()) {
         return false;
     }
 
     // If all checks passed, the setup is valid
     return true;
-} */
+}

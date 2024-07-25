@@ -19,16 +19,18 @@ public:
     ~Board();
 
     void initialize();
+    void clear();
+    bool valid(std::string pos);
     char view(const std::string& position) const;
     bool move(const std::string& before, const std::string& after, char promotion = '\0');
-    bool check(const std::string& kingPosition) const;
+    bool check();
     bool checkmate(char kingColor) /*const*/;
-    bool stalemate(char kingColor) const;
+    bool stalemate(char kingColor) ;
     void undo();
-    void replacePiece(std::string position, Piece* newPiece);
+    bool replacePiece(std::string position, char piece);
     bool isPathClear(int startX, int startY, int endX, int endY) const;
     Piece* getLastMovedPiece() const {return lastMovedPiece;}; 
-    bool isValidSetup() const;
+    bool isValidSetup();
 };
 
 #endif

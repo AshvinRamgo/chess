@@ -1,7 +1,7 @@
 #include "graphical_display.h"
 
 Graphical_Display::Graphical_Display(const Board& b): board{b} {
-    draw_board();
+    //draw_board();
 }
 
 void Graphical_Display::draw_board() {

@@ -62,7 +62,6 @@ int main() {
         while (std::cin >> input) {
             if (input == "game") {
                 // Set up the game (unimplemented)
-		        chessBoard.player = 'w';
                 /*
                 std::string p1 = "";
                 std::string p2 = "";
@@ -80,7 +79,7 @@ int main() {
 			    std::cin >> promotion;
 		        }
 		        if (!chessBoard.move(pos, dest, promotion)){
-			    std::cout << "invalid move" << std::endl;
+			        std::cout << "invalid move" << std::endl;
 		        } else {
 			    // render	
 			    textDisplay.render();
@@ -143,37 +142,52 @@ int main() {
 		        textDisplay.score(bwin, wwin);
 		        graphicalDisplay.score(bwin, wwin);
 		        sleep(2);
+                chessBoard.clear();
 		        chessBoard.initialize();
                 break;
             }
-            /* else if (input == "setup") {
+            else if (input == "setup") {
                 // Enter setup mode
+                chessBoard.clear();
+                textDisplay.render();
+                graphicalDisplay.draw_board();
                 std::string op;
                 while (std::cin >> op) {
                     if (op == "+") {
                         char piece;
                         std::string pos;
                         std::cin >> piece >> pos;
-                        chessBoard.replacePiece(pos, new Piece(piece));
-			            textDisplay.render();
-			            graphicalDisplay.render_square(pos[1] - '0', pos[0] - 'a' + 1);
+                        if (piece == ' ' || !chessBoard.replacePiece(pos, piece)) {
+                            std::cout << "Invalid add. Please try again." << std::endl;
+                        } else {
+			                textDisplay.render();
+			                graphicalDisplay.render_square(pos[1] - '0', pos[0] - 'a' + 1);
+                        }
                     }
                     else if (op == "-") {
                         std::string pos;
                         std::cin >> pos;
-                        chessBoard.replacePiece(pos, nullptr);
-                        textDisplay.render();
-			            graphicalDisplay.render_square(pos[1] - '0', pos[0] - 'a' + 1);
+                        if (!chessBoard.replacePiece(pos, ' ')) {
+                            std::cout << "Invalid remove. Please try again." << std::endl;
+                        } else {
+			                textDisplay.render();
+			                graphicalDisplay.render_square(pos[1] - '0', pos[0] - 'a' + 1);
+                        }
                     }
                     else if (op == "=") {
                         std::string color;
 			            std::cout << "Enter the color of the player to go next (black or white): "; 
                         std::cin >> color;
-			            while (color != "white" || color != "black") {
+			            while (color != "white" && color != "black") {
 			                std::cout << "Invalid color. Please enter 'white' or 'black'. ";
                             std::cin >> color;
                         }
-                        std::cout << "Please make a move" << color; 
+                        if (color == "white") {
+                            chessBoard.player = 'w';
+                        } else {
+                            chessBoard.player = 'b';
+                        }
+                        std::cout << "First Move: " << color << std::endl;
                     }
                     else if (op == "done") {
                         if (chessBoard.isValidSetup()) {
@@ -183,7 +197,7 @@ int main() {
                         }
                     }
                 }
-            } */
+            } 
             else {
                 std::cout << "Invalid command. Please try again." << std::endl;
             }
