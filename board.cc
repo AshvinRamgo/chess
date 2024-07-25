@@ -243,3 +243,56 @@ bool Board::isPathClear(int startX, int startY, int endX, int endY) const {
     // If we reached the destination without finding any occupied squares, path is clear
     return true;
 }
+
+bool Board::isValidSetup() const {
+    int whiteKingCount = 0;
+    int blackKingCount = 0;
+
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            Piece* piece = board[i][j];
+            if (piece) {
+                // Check for pawns on the first or last row
+                if ((i == 0 || i == 7) && piece->getType() == 'P') {
+                    return false;
+                }
+
+                // Count the kings
+                if (piece->getType() == 'K') {
+                    if (piece->getColor() == 'W') {
+                        ++whiteKingCount;
+                    } else if (piece->getColor() == 'B') {
+                        ++blackKingCount;
+                    }
+                }
+            }
+        }
+    }
+
+    // Check for exactly one king of each color
+    if (whiteKingCount != 1 || blackKingCount != 1) {
+        return false;
+    }
+
+    // Check if either king is in check
+    std::string whiteKingPosition, blackKingPosition;
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            Piece* piece = board[i][j];
+            if (piece && piece->getType() == 'K') {
+                if (piece->getColor() == 'W') {
+                    whiteKingPosition = std::string(1, 'a' + j) + std::to_string(8 - i);
+                } else if (piece->getColor() == 'B') {
+                    blackKingPosition = std::string(1, 'a' + j) + std::to_string(8 - i);
+                }
+            }
+        }
+    }
+
+    if (check(whiteKingPosition) || check(blackKingPosition)) {
+        return false;
+    }
+
+    // If all checks passed, the setup is valid
+    return true;
+}
