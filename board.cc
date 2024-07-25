@@ -189,3 +189,33 @@ void Board::replacePiece(std::string position, Piece* newPiece) {
     delete board[row][col];
     board[row][col] = newPiece;
 }
+
+
+bool Board::isPathClear(int startX, int startY, int endX, int endY) const {
+    // Determine the direction of the move
+    int directionX = (endX > startX) ? 1 : -1;
+    int directionY = (endY > startY) ? 1 : -1;
+
+    // Move to next square in direction of the move
+    startX += directionX;
+    startY += directionY;
+
+    // Continue moving in direction of move until we reach destination
+    while (startX != endX || startY != endY) {
+        // Convert current coordinates to a position string
+        std::string currentPosition = std::string(1, 'a' + startX) + std::to_string(1 + startY);
+
+        // If the current square is occupied, path is not clear
+        if (board[startX][startY] != nullptr) {
+            return false;
+        }
+
+        // Move to next square in direction of the move
+        startX += directionX;
+        startY += directionY;
+    }
+
+    // If we reached the destination without finding any occupied squares, path is clear
+    return true;
+}
+

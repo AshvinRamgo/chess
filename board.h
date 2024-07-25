@@ -32,7 +32,8 @@ public:
     bool stalemate(char kingColor) const;
     void undo();
     void replacePiece(std::string position, Piece* newPiece);
-    Piece* getLastMovedPiece() const {return lastMovedPiece;}
+    bool isPathClear(int startX, int startY, int endX, int endY) const;
+    Piece* getLastMovedPiece() const {return lastMovedPiece;}; 
 };
 
 #endif
