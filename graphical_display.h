@@ -12,8 +12,8 @@ class Graphical_Display {
     const std::string STALEMATE = "Game tied! By Stalemate";
     const Board& board;
     Xwindow w {800, 800};
-    void render_square(int r, int c);
     public:
+        void render_square(int r, int c);
         Graphical_Display(const Board& b);
         void draw_board();
         void render(int r1, int c1, int r2, int c2);
