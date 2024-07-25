@@ -5,6 +5,7 @@
 #include "pieces.h"
 #include <string>
 
+
 class Bishop : public Piece {
 public:
     Bishop(char color);
@@ -12,4 +13,3 @@ public:
 };
 
 #endif // BISHOP_H
-

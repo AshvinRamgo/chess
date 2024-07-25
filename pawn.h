@@ -1,4 +1,4 @@
-/ Pawn.h
+// Pawn.h
 #ifndef PAWN_H
 #define PAWN_H
 

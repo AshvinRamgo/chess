@@ -60,17 +60,42 @@ std::string Board::view(const std::string& position) const {
 }
 
 bool Board::move(const std::string& before, const std::string& after, char promotion) {
-    int before_row = before[1] - '1';
+    int before_row = '8' - before[1];
     int before_col = before[0] - 'a';
-    int after_row = after[1] - '1';
+    int after_row = '8' - after[1];
     int after_col = after[0] - 'a';
 
+
+    Piece* toMove = board[before_row][before_col];
     if (board[before_row][before_col] && board[before_row][before_col]->move(after)) {
         Piece* temp = board[after_row][after_col];
         board[after_row][after_col] = board[before_row][before_col];
         board[before_row][before_col] = temp;
         move_history.push_back(before + after + promotion);
         lastMovedPiece = board[after_row][after_col];
+        // Handle promotion
+        if (toMove->getType() == 'P' && (after_row == 0 || after_row == 7)) {
+            delete board[after_row][after_col];
+            switch (promotion) {
+                case 'Q':
+                    board[after_row][after_col] = new Queen(toMove->getColor());
+                    break;
+                case 'R':
+                    board[after_row][after_col] = new Rook(toMove->getColor());
+                    break;
+                case 'B':
+                    board[after_row][after_col] = new Bishop(toMove->getColor());
+                    break;
+                case 'N':
+                    board[after_row][after_col] = new Knight(toMove->getColor());
+                    break;
+                default:
+                    board[after_row][after_col] = new Queen(toMove->getColor());
+                    break;
+            }
+        }
+
+        delete temp;
         return true;
     }
     return false;
@@ -144,7 +169,7 @@ bool Board::checkmate(char kingColor) const {
 
 bool Board::stalemate(char kingColor) const {
     std::string kingPosition;
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
             if (board[i][j] && board[i][j]->getColor() == kingColor && board[i][j]->getType() == 'K') {
                 kingPosition = std::string(1, 'a' + j) + std::to_string(i + 1);
@@ -218,4 +243,3 @@ bool Board::isPathClear(int startX, int startY, int endX, int endY) const {
     // If we reached the destination without finding any occupied squares, path is clear
     return true;
 }
-

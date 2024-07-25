@@ -22,4 +22,3 @@ bool Bishop::move(std::string destination) {
     // If the move is not diagonal or the path is blocked, the move is invalid
     return false;
 }
-
