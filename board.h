@@ -34,6 +34,7 @@ public:
     void replacePiece(std::string position, Piece* newPiece);
     bool isPathClear(int startX, int startY, int endX, int endY) const;
     Piece* getLastMovedPiece() const {return lastMovedPiece;}; 
+    bool isValidSetup() const;
 };
 
 #endif
