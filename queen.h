@@ -7,8 +7,8 @@
 
 class Queen : public Piece {
 public:
-    Queen(char color);
-    bool move(std::string destination);
+    Queen(char color, const Board& b);
+    bool move(std::string position, std::string destination);
 };
 
 #endif // QUEEN_H

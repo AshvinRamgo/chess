@@ -6,8 +6,8 @@
 
 class Pawn : public Piece {
 public:
-    Pawn(char color);
-    bool move(std::string destination) override;
+    Pawn(char color, const Board& b);
+    bool move(std::string position, std::string destination) override;
     bool enPassant(std::string destination, Piece* lastMovedPiece);
     void promotion(char pieceType);
 private:

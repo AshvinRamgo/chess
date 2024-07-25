@@ -4,13 +4,6 @@
 #include <string>
 #include <vector>
 #include "pieces.h"
-#include "queen.h"
-#include "pawn.h"
-#include "rook.h"
-#include "queen.h"
-#include "knight.h"
-#include "king.h"
-#include "bishop.h"
 
 class Board {
 private:

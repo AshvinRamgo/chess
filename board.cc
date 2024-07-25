@@ -1,4 +1,11 @@
 #include "board.h"
+#include "pieces.h"
+#include "queen.h"
+#include "pawn.h"
+#include "rook.h"
+#include "knight.h"
+#include "king.h"
+#include "bishop.h"
 #include <iostream>
 #include <sstream>
 
@@ -17,29 +24,29 @@ Board::~Board() {
 void Board::initialize() {
     // Initialize the board with the standard starting positions
     // Black pieces
-    board[0][0] = new Rook('B');
-    board[0][1] = new Knight('B');
-    board[0][2] = new Bishop('B');
-    board[0][3] = new Queen('B');
-    board[0][4] = new King('B');
-    board[0][5] = new Bishop('B');
-    board[0][6] = new Knight('B');
-    board[0][7] = new Rook('B');
+    board[0][0] = new Rook('B', *this);
+    board[0][1] = new Knight('B', *this);
+    board[0][2] = new Bishop('B', *this);
+    board[0][3] = new Queen('B', *this);
+    board[0][4] = new King('B', *this);
+    board[0][5] = new Bishop('B', *this);
+    board[0][6] = new Knight('B', *this);
+    board[0][7] = new Rook('B', *this);
     for (int i = 0; i < 8; ++i) {
-        board[1][i] = new Pawn('B');
+        board[1][i] = new Pawn('B', *this);
     }
 
     // White pieces
-    board[7][0] = new Rook('W');
-    board[7][1] = new Knight('W');
-    board[7][2] = new Bishop('W');
-    board[7][3] = new Queen('W');
-    board[7][4] = new King('W');
-    board[7][5] = new Bishop('W');
-    board[7][6] = new Knight('W');
-    board[7][7] = new Rook('W');
+    board[7][0] = new Rook('W', *this);
+    board[7][1] = new Knight('W', *this);
+    board[7][2] = new Bishop('W', *this);
+    board[7][3] = new Queen('W', *this);
+    board[7][4] = new King('W', *this);
+    board[7][5] = new Bishop('W',*this);
+    board[7][6] = new Knight('W',*this);
+    board[7][7] = new Rook('W', *this);
     for (int i = 0; i < 8; ++i) {
-        board[6][i] = new Pawn('W');
+        board[6][i] = new Pawn('W', *this);
     }
 
     // Empty squares
@@ -63,6 +70,7 @@ char Board::view(const std::string& position) const {
         }
         return board[row][col]->getType() - 'A' + 'a';
     }
+    return ' ';
 }
 
 bool Board::move(const std::string& before, const std::string& after, char promotion) {
@@ -73,38 +81,44 @@ bool Board::move(const std::string& before, const std::string& after, char promo
 
 
     Piece* toMove = board[before_row][before_col];
-    if (/*board[before_row][before_col] && board[before_row][before_col]->move(after)*/ 1) {
-        Piece* temp = board[after_row][after_col];
-        board[after_row][after_col] = board[before_row][before_col];
+    if (board[before_row][before_col] && board[before_row][before_col]->move(before, after) && board[before_row][before_col]->getColor() != board[after_row][after_col]->getColor()) {
+        /*Piece* temp = board[after_row][after_col];                     // A simpler version is wrote below
+        board[after_row][after_col] = board[before_row][before_col];     // note the "delete temp" below is part of this"
         board[before_row][before_col] = temp;
         move_history.push_back(before + after + promotion);
-        lastMovedPiece = board[after_row][after_col];
+        lastMovedPiece = board[after_row][after_col];*/
+        if (board[after_row][after_col]) {
+            delete board[after_row][after_col];
+        }
+        board[after_row][after_col] = board[before_row][before_col];
+        board[before_row][before_col] = nullptr;
+
         // Handle promotion
         if (toMove->getType() == 'P' && (after_row == 0 || after_row == 7)) {
             delete board[after_row][after_col];
             switch (promotion) {
                 case 'Q':
-                    board[after_row][after_col] = new Queen(toMove->getColor());
+                    board[after_row][after_col] = new Queen(toMove->getColor(), *this);
                     break;
                 case 'R':
-                    board[after_row][after_col] = new Rook(toMove->getColor());
+                    board[after_row][after_col] = new Rook(toMove->getColor(), *this);
                     break;
                 case 'B':
-                    board[after_row][after_col] = new Bishop(toMove->getColor());
+                    board[after_row][after_col] = new Bishop(toMove->getColor(), *this);
                     break;
                 case 'N':
-                    board[after_row][after_col] = new Knight(toMove->getColor());
+                    board[after_row][after_col] = new Knight(toMove->getColor(), *this);
                     break;
                 default:
-                    board[after_row][after_col] = new Queen(toMove->getColor());
+                    board[after_row][after_col] = new Queen(toMove->getColor(), *this);
                     break;
             }
         }
 
-        delete temp;
+        //delete temp;
         return true;
     }
-    return /*false*/ true;
+    return false;
 }
 
 bool Board::isSquareUnderAttack(const std::string& position, char attackerColor) const {
@@ -114,9 +128,12 @@ bool Board::isSquareUnderAttack(const std::string& position, char attackerColor)
 
     for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
+            std::string from = "";
+            from += 'a' + j;
+            from += '8' - i;
             if (board[i][j] && board[i][j]->getColor() == attackerColor) {
                 std::string currentPos = std::string(1, 'a' + j) + std::to_string(i + 1);
-                if (board[i][j]->move(position)) {
+                if (board[i][j]->move(from, position)) {
                     return true;
                 }
             }
@@ -160,7 +177,10 @@ bool Board::checkmate(char kingColor) /*const*/ {
                     for (int c = 0; c < 8; ++c) {
                         std::string newPos = std::string(1, 'a' + c) + std::to_string(r + 1);
                         Piece* temp = board[r][c];
-                        if (board[i][j]->move(newPos)) {
+                        std::string from = "";
+                        from += 'a' + j;
+                        from += '8' - i;
+                        if (board[i][j]->move(from, newPos)) {
                             board[r][c] = board[i][j];
                             board[i][j] = nullptr;
                             if (!check(kingPosition)) {
@@ -200,7 +220,10 @@ bool Board::stalemate(char kingColor) const {
                 for (int r = 7; r >= 0; --r) {
                     for (int c = 0; c < 8; ++c) {
                         std::string newPos = std::string(1, 'a' + c) + std::to_string(r + 1);
-                        if (board[i][j]->move(newPos)) {
+                        std::string from = "";
+                        from += 'a' + j;
+                        from += '8' - i;
+                        if (board[i][j]->move(from, newPos)) {
                             return false;
                         }
                     }
@@ -221,17 +244,22 @@ void Board::undo() {
 
 
 void Board::replacePiece(std::string position, Piece* newPiece) {
-    int row = position[1] - '1';
+    int row = '8' - position[1];
     int col = position[0] - 'a';
     delete board[row][col];
     board[row][col] = newPiece;
 }
 
-
+// This method assumes a valid path
 bool Board::isPathClear(int startX, int startY, int endX, int endY) const {
     // Determine the direction of the move
-    int directionX = (endX > startX) ? 1 : -1;
-    int directionY = (endY > startY) ? 1 : -1;
+    int directionX, directionY;
+    if (endX > startX) {directionX = 1;}
+    else if (endX == startX) {directionX = 0;}
+    else {directionX = -1;}
+    if (endY > startY) {directionY = 1;}
+    else if (endY == startY) {directionY = 0;}
+    else {directionY = -1;}
 
     // Move to next square in direction of the move
     startX += directionX;
@@ -240,10 +268,10 @@ bool Board::isPathClear(int startX, int startY, int endX, int endY) const {
     // Continue moving in direction of move until we reach destination
     while (startX != endX || startY != endY) {
         // Convert current coordinates to a position string
-        std::string currentPosition = std::string(1, 'a' + startX) + std::to_string(1 + startY);
+        //std::string currentPosition = std::string(1, 'a' + startX) + std::to_string(1 + startY);       //commented out because not used
 
         // If the current square is occupied, path is not clear
-        if (board[startX][startY] != nullptr) {
+        if (board[startY][startX] != nullptr) {
             return false;
         }
 

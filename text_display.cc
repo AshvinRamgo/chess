@@ -1,4 +1,4 @@
-#include "text_display.h"
+ #include "text_display.h"
 Text_Display::Text_Display(const Board& b): board{b} {}
 void Text_Display::render() {
     std::cout << WRAPPER;

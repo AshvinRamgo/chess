@@ -7,8 +7,8 @@
 
 class King : public Piece {
 public:
-    King(char color);
-    bool move(std::string destination);
+    King(char color, const Board& b);
+    bool move(std::string position, std::string destination);
     bool hasMoved();
 private:
     bool moved;

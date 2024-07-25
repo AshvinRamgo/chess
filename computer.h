@@ -6,6 +6,7 @@
 #include <vector>
 #include "board.h"
 
+/*
 class Computer {
 public:
     // Constructor
@@ -39,4 +40,5 @@ private:
 
 };
 
+*/
 #endif // COMPUTER_H

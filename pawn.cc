@@ -5,15 +5,15 @@
 #include "queen.h"
 #include "knight.h"
 #include "bishop.h"
-#include "board.h" 
+#include "board.h"
 
-Pawn::Pawn(char color) : Piece(color, 'P'), hasMoved(false) {}
+Pawn::Pawn(char color, const Board& b) : Piece(color, 'P', b), hasMoved(false) {}
 
-bool Pawn::move(std::string destination) {
+bool Pawn::move(std::string position, std::string destination) {
     int dx = destination[0] - position[0];
-    int dy = destination[1] - position[1];
+    int dy = destination[1] - position[1]; 
 
-    if (color == 'W') {
+    if (color == 'B' /*'W'*/) {
         dy = -dy;  // Adjust direction for white pawns
     }
 
@@ -27,7 +27,7 @@ bool Pawn::move(std::string destination) {
         return true;
     }
 
-    if (dy == 1 && abs(dx) == 1) {  // Capture move
+    if (dy == 1 && abs(dx) == 1 && board.view(destination) != ' ') {  // Capture move (incomplete implementaion, contradicts with enPassant check)
         // Call enPassant method here
         /*Piece* lastMovedPiece = Board::getLastMovedPiece();  // Assume that there is a method in the Board class for getting the last moved piece
         if (enPassant(destination, lastMovedPiece)) {
@@ -36,13 +36,14 @@ bool Pawn::move(std::string destination) {
         } */
         return true;
     }
-
+    /*         // removed since implemented in Board::move()
     // Check for promotion
     if ((color == 'W' && destination[1] == '8') || (color == 'B' && destination[1] == '1')) {
         // Call promotion method here
         char pieceType = 'Q';  // Assume that the pawn is always promoted to a queen for now
         promotion(pieceType);
     }
+    */ 
 
     return false;
 }
@@ -69,20 +70,20 @@ bool Pawn::enPassant(std::string destination, Piece* lastMovedPiece) {
     return false;
 }
 
-void Pawn::promotion(char pieceType) {
+/* void Pawn::promotion(char pieceType) {
     Piece* newPiece;
     switch (pieceType) {
         case 'Q':
-            newPiece = new Queen(color);
+            newPiece = new Queen(color, board);
             break;
         case 'R':
-            newPiece = new Rook(color);
+            newPiece = new Rook(color, board);
             break;
         case 'B':
-            newPiece = new Bishop(color);
+            newPiece = new Bishop(color, board);
             break;
         case 'N':
-            newPiece = new Knight(color);
+            newPiece = new Knight(color, board);
             break;
         default:
             return;  // Invalid piece type
@@ -90,5 +91,5 @@ void Pawn::promotion(char pieceType) {
     // Board::replacePiece(position, newPiece);
     // NOT IMPLEMENTED
 }
-
+*/
 

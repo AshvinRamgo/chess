@@ -7,8 +7,8 @@
 
 class Rook : public Piece {
 public:
-    Rook(char color);
-    bool move(std::string destination);
+    Rook(char color, const Board& b);
+    bool move(std::string position, std::string destination);
     bool hasMoved();
 private:
     bool moved;

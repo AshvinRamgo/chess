@@ -1,19 +1,20 @@
 // King.cc
 #include "king.h"
 #include "rook.h" // Include the Rook header file to access the hasMoved method
+#include "board.h"
 
-King::King(char color) : Piece(color, 'K'), moved(false) {}
+King::King(char color, const Board& b) : Piece(color, 'K', b), moved(false) {}
 
-bool King::move(std::string destination) {
+bool King::move(std::string position, std::string destination) {
     // Convert the current position and destination to coordinates
     int x1 = position[0] - 'a';
-    int y1 = position[1] - '1';
+    int y1 = '8' - position[1];
     int x2 = destination[0] - 'a';
-    int y2 = destination[1] - '1';
+    int y2 = '8' - destination[1];
 
     // Check if the move is to an adjacent square
     if (abs(x1 - x2) <= 1 && abs(y1 - y2) <= 1) {
-        position = destination;
+        // position = destination;
         moved = true;
         return true;
     }
@@ -23,7 +24,7 @@ bool King::move(std::string destination) {
         // Check if the path is clear and the rook has not moved
         // Assuming rook is an instance of the Rook class
         /* Rook* rook = getRook(x2 > x1 ? 'h' : 'a');
-        if (isPathClear(x1, y1, x2, y2) && rook && !rook->hasMoved()) {
+        if (board.isPathClear(x1, y1, x2, y2) && rook && !rook->hasMoved()) {
             position = destination;
             moved = true;
             return true;
