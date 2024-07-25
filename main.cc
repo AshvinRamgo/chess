@@ -1,5 +1,6 @@
 #include "board.h"
 #include "text_display.h"
+#include "graphical_display.h"
 #include "window.h"
 #include <unistd.h>
 #include <string>
@@ -7,10 +8,10 @@
 
 
 char next(char current) { // returns the next player to move
-    if (current == ‘w’) {
-        return ‘b’;
+    if (current == 'w') {
+        return 'b';
     }
-    return ‘w’;
+    return 'w';
 }
 
 
@@ -29,6 +30,7 @@ void printHelp() {
 
 
 int main() {
+    printHelp();
     // Create a Board object
     Board chessBoard;
     chessBoard.initialize();
@@ -48,7 +50,7 @@ int main() {
     int wwin = 0;
 	
     // Other variables
-    char player = ‘w’;
+    char player = 'w';
 
 
     // implement prompts last
@@ -60,60 +62,62 @@ int main() {
         while (std::cin >> input) {
             if (input == "game") {
                 // Set up the game
-		   player = ‘w’;
+		   player = 'w';
                 std::string p1 = "";
                 std::string p2 = "";
                 std::cin >> p1;
                 std::cin >> p2;
                 // chessBoard.setPlayers(p1, p2);
             }
-            else if (input == “move”){
+            else if (input == "move"){
 		   std::string pos, dest;
 		   char promotion = 0;
 		   std::cin >> pos >> dest;
-		   if (std::cin.peek() == ‘ ‘){
+		   if (std::cin.peek() == ' '){
 			std::cin >> promotion;
 		   }
-		   if (!board.move(pos, dest, promotion)){
-			std::cout << “invalid move” << std::endl;
+		   if (!chessBoard.move(pos, dest, promotion)){
+			std::cout << "invalid move" << std::endl;
 		   } else {
 			// render	
 			textDisplay.render();
-			graphicalDisplay.render(pos[1] - ‘0’, pos[0] - ‘a’ + 1, dest[1] - ‘0’, dest[0] - ‘a’ + 1);
+			graphicalDisplay.render(pos[1] - '0', pos[0] - 'a' + 1, dest[1] - '0', dest[0] - 'a' + 1);
 			// check for checkmate, stalemate
-			if (chessBoard.checkmate(next(player) + ‘A’ - ‘a’)) {
-			    if (player == ‘w’) {
-				wwin += 1;
-				textDisplay.checkmate(‘w’);
-				graphicalDisplay.checkmate(‘w’);
-				sleep(1);
-				textDisplay.score(bwin, wwin);
-				graphicalDisplay.score(bwin, wwin);
-				sleep(2);
-				chessBoard.initialize();
-				break;
+			/* if (chessBoard.checkmate(next(player) + 'A' - 'a')) {
+			    if (player == 'w') {
+				    wwin += 1;
+				    textDisplay.checkmate('w');
+				    graphicalDisplay.checkmate('w');
+				    sleep(1);
+				    textDisplay.score(bwin, wwin);
+				    graphicalDisplay.score(bwin, wwin);
+				    sleep(2);
+				    chessBoard.initialize();
+				    break;
 			    }
 			    bwin+= 1;
-			    textDisplay.checkmate(‘b’);
-			    graphicalDisplay.checkmate(‘b’);
+			    textDisplay.checkmate('b');
+			    graphicalDisplay.checkmate('b');
 			    sleep(1);
 			    textDisplay.score(bwin, wwin);
 			    graphicalDisplay.score(bwin, wwin);
 			    sleep(2);
 			    chessBoard.initialize();
 			    break;
-			} else if (chessBoard.stalemate(next(player) + ‘A’ - ‘a’)) {
-			    textDisplay.stalemate()
-			    graphicalDisplay.stalemate()
+			} else if (chessBoard.stalemate(next(player) + 'A' - 'a')) {
+			    textDisplay.stalemate();
+			    graphicalDisplay.stalemate();
 			    sleep(1);
 			    textDisplay.score(bwin, wwin);
 			    graphicalDisplay.score(bwin, wwin);
 			    sleep(2);
 			    chessBoard.initialize();
 			    break;
+            
 			} else {
 			    player = next(player);
-			}
+			} */
+            player = next(player);
 			// switch players
 		   }
             }
@@ -123,23 +127,23 @@ int main() {
             }
             else if (input == "resign") {
                 // Resign the game
-                if (player == ‘b’) {
+                if (player == 'b') {
                     bwin += 1;
                 }
                 else {
                     wwin += 1;
                 }
-	   	   // resign and display scores
+	   	        // resign and display scores
                 textDisplay.resign(player);
-		   graphicalDisplay.resign(player);
-		   sleep(1); // pauses execution for 1 second from unistd.h
-		   textDisplay.score(bwin, wwin);
-		   graphicalDisplay.score(bwin, wwin);
-		   sleep(2);
-		   chessBoard.initialize();
+		        graphicalDisplay.resign(player);
+		        sleep(1); // pauses execution for 1 second from unistd.h
+		        textDisplay.score(bwin, wwin);
+		        graphicalDisplay.score(bwin, wwin);
+		        sleep(2);
+		        chessBoard.initialize();
                 break;
             }
-            else if (input == "setup") {
+            /* else if (input == "setup") {
                 // Enter setup mode
                 std::string op;
                 while (std::cin >> op) {
@@ -148,27 +152,25 @@ int main() {
                         std::string pos;
                         std::cin >> piece >> pos;
                         chessBoard.replacePiece(pos, new Piece(piece));
-			    textDisplay.render()
-			    graphicalDisplay.render_square(pos[1] - ‘0’, pos[0] - ‘a’ + 1);
+			            textDisplay.render();
+			            graphicalDisplay.render_square(pos[1] - '0', pos[0] - 'a' + 1);
                     }
                     else if (op == "-") {
                         std::string pos;
                         std::cin >> pos;
                         chessBoard.replacePiece(pos, nullptr);
-                        textDisplay.render()
-			    graphicalDisplay.render_square(pos[1] - ‘0’, pos[0] - ‘a’ + 1);
+                        textDisplay.render();
+			            graphicalDisplay.render_square(pos[1] - '0', pos[0] - 'a' + 1);
                     }
                     else if (op == "=") {
                         std::string color;
-			    std::cout << “Enter the color of the player to go next
-			    (black or white): “ ; 
+			            std::cout << "Enter the color of the player to go next (black or white): "; 
                         std::cin >> color;
-			    while (color != “white” || “color != “black) {
-			    std::cout << “Invalid color. Please enter ‘white’ or
-    ‘black’. ;
-    std::cin >> color;
-}
-std::cout “Please make a move” << color; 
+			            while (color != "white" || color != "black") {
+			                std::cout << "Invalid color. Please enter 'white' or 'black'. ";
+                            std::cin >> color;
+                        }
+                        std::cout << "Please make a move" << color; 
                     }
                     else if (op == "done") {
                         if (chessBoard.isValidSetup()) {
@@ -178,7 +180,7 @@ std::cout “Please make a move” << color;
                         }
                     }
                 }
-            }
+            } */
             else {
                 std::cout << "Invalid command. Please try again." << std::endl;
             }

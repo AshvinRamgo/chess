@@ -2,7 +2,7 @@
 #include <cstdlib>  // for std::rand
 #include "computer.h"
 #include "board.h"
-
+/*
 // Helper function to generate all possible moves
 std::vector<std::string> Computer::generateAllMoves(Board *board, char color) {
     std::vector<std::string> allMoves;
@@ -170,3 +170,5 @@ std::string Computer::level3() {
 //  maximizes the minimum value of the opponent’s possible following moves.
 // Maximizing and Minimizing Player: In the context of your chess game, the computer is the maximizing player and the opponent is the minimizing player. 
 // The computer tries to maximize its score, while the opponent tries to minimize the computer’s score.
+
+*/

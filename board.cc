@@ -50,13 +50,19 @@ void Board::initialize() {
     }
 }
 
-std::string Board::view(const std::string& position) const { 
+char Board::view(const std::string& position) const { 
     int row = '8' - position[1];
     int col = position[0] - 'a';
-    if (board[row][col]) {
+    /* if (board[row][col]) {
         return std::string(1, board[row][col]->getColor()) + board[row][col]->getType();
     }
-    return "";
+    return ""; */
+    if (board[row][col]) {
+        if (board[row][col]->getColor() == 'W') {
+            return board[row][col]->getType();
+        }
+        return board[row][col]->getType() - 'A' + 'a';
+    }
 }
 
 bool Board::move(const std::string& before, const std::string& after, char promotion) {
@@ -67,7 +73,7 @@ bool Board::move(const std::string& before, const std::string& after, char promo
 
 
     Piece* toMove = board[before_row][before_col];
-    if (board[before_row][before_col] && board[before_row][before_col]->move(after)) {
+    if (/*board[before_row][before_col] && board[before_row][before_col]->move(after)*/ 1) {
         Piece* temp = board[after_row][after_col];
         board[after_row][after_col] = board[before_row][before_col];
         board[before_row][before_col] = temp;
@@ -98,7 +104,7 @@ bool Board::move(const std::string& before, const std::string& after, char promo
         delete temp;
         return true;
     }
-    return false;
+    return /*false*/ true;
 }
 
 bool Board::isSquareUnderAttack(const std::string& position, char attackerColor) const {
@@ -120,12 +126,18 @@ bool Board::isSquareUnderAttack(const std::string& position, char attackerColor)
 }
 
 bool Board::check(const std::string& kingPosition) const {
-    char kingColor = view(kingPosition)[0];
+    
+    char kingColor = view(kingPosition);
+    if (kingColor = 'K') {
+        kingColor = 'W';
+    } else {
+        kingColor = 'B';
+    }
     char attackerColor = (kingColor == 'W') ? 'B' : 'W';
     return isSquareUnderAttack(kingPosition, attackerColor);
 }
 
-bool Board::checkmate(char kingColor) const {
+bool Board::checkmate(char kingColor) /*const*/ {
     std::string kingPosition;
     for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
@@ -244,7 +256,7 @@ bool Board::isPathClear(int startX, int startY, int endX, int endY) const {
     return true;
 }
 
-bool Board::isValidSetup() const {
+/* bool Board::isValidSetup() const {
     int whiteKingCount = 0;
     int blackKingCount = 0;
 
@@ -253,7 +265,7 @@ bool Board::isValidSetup() const {
             Piece* piece = board[i][j];
             if (piece) {
                 // Check for pawns on the first or last row
-                if ((i == 0 || i == 7) && piece->getType() == 'P') {
+                if ((i == 0  i == 7) && piece->getType() == 'P') {
                     return false;
                 }
 
@@ -270,7 +282,7 @@ bool Board::isValidSetup() const {
     }
 
     // Check for exactly one king of each color
-    if (whiteKingCount != 1 || blackKingCount != 1) {
+    if (whiteKingCount != 1  blackKingCount != 1) {
         return false;
     }
 
@@ -295,4 +307,4 @@ bool Board::isValidSetup() const {
 
     // If all checks passed, the setup is valid
     return true;
-}
+} */

@@ -22,12 +22,13 @@ bool King::move(std::string destination) {
     if (!moved && y1 == y2 && (x2 == x1 + 2 || x2 == x1 - 2)) {
         // Check if the path is clear and the rook has not moved
         // Assuming rook is an instance of the Rook class
-        Rook* rook = getRook(x2 > x1 ? 'h' : 'a');
+        /* Rook* rook = getRook(x2 > x1 ? 'h' : 'a');
         if (isPathClear(x1, y1, x2, y2) && rook && !rook->hasMoved()) {
             position = destination;
             moved = true;
             return true;
-        }
+        } */
+        return true;
     }
 
     // If the move is not to an adjacent square or a valid castling move, the move is invalid

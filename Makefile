@@ -21,7 +21,7 @@ EXEC = a.out					# executable name
 .PHONY : clean					# not file names
 
 ${EXEC} : ${OBJECTS}				# link step
-	${CXX} ${CXXFLAGS} $^ -o $@		# additional object files before $^
+	${CXX} ${CXXFLAGS} $^ -o $@ -lX11		
 
 ${OBJECTS} : ${MAKEFILE_NAME}			# OPTIONAL : changes to this file => recompile
 
@@ -31,4 +31,3 @@ ${OBJECTS} : ${MAKEFILE_NAME}			# OPTIONAL : changes to this file => recompile
 
 clean :						# remove files that can be regenerated
 	rm -f ${DEPENDS} ${OBJECTS} ${EXEC}
-

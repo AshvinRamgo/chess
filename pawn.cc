@@ -29,11 +29,12 @@ bool Pawn::move(std::string destination) {
 
     if (dy == 1 && abs(dx) == 1) {  // Capture move
         // Call enPassant method here
-        Piece* lastMovedPiece = Board::getLastMovedPiece();  // Assume that there is a method in the Board class for getting the last moved piece
+        /*Piece* lastMovedPiece = Board::getLastMovedPiece();  // Assume that there is a method in the Board class for getting the last moved piece
         if (enPassant(destination, lastMovedPiece)) {
             Board::replacePiece(destination, nullptr);  // Capture the last moved piece
             return true;
-        }
+        } */
+        return true;
     }
 
     // Check for promotion
@@ -53,7 +54,7 @@ bool Pawn::enPassant(std::string destination, Piece* lastMovedPiece) {
         // Check if the last moved piece moved two squares forward from its starting position
         // This will require access to the last moved piece's previous position and the board state
         // If the conditions for en passant are met, capture the last moved piece and return true
-        int dx = lastMovedPiece->getPosition()[0] - position[0];
+        /* int dx = lastMovedPiece->getPosition()[0] - position[0];
         int dy = lastMovedPiece->getPosition()[1] - position[1];
 
         if (abs(dy) == 2 && dx == 0) {
@@ -62,7 +63,8 @@ bool Pawn::enPassant(std::string destination, Piece* lastMovedPiece) {
             if (destination == lastMovedPiece->getPosition()) {
                 return true;
             }
-        }
+        } */
+        return true;
     }
     return false;
 }
@@ -85,7 +87,8 @@ void Pawn::promotion(char pieceType) {
         default:
             return;  // Invalid piece type
     }
-    Board::replacePiece(position, newPiece);
+    // Board::replacePiece(position, newPiece);
+    // NOT IMPLEMENTED
 }
 
 

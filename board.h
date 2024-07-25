@@ -14,7 +14,7 @@
 
 class Board {
 private:
-    static Piece* board[8][8];
+    /*static*/ Piece* board[8][8];
     std::vector<std::string> move_history;
     Piece* lastMovedPiece;  
 
@@ -25,10 +25,10 @@ public:
     ~Board();
 
     void initialize();
-    std::string view(const std::string& position) const;
+    char view(const std::string& position) const;
     bool move(const std::string& before, const std::string& after, char promotion = '\0');
     bool check(const std::string& kingPosition) const;
-    bool checkmate(char kingColor) const;
+    bool checkmate(char kingColor) /*const*/;
     bool stalemate(char kingColor) const;
     void undo();
     void replacePiece(std::string position, Piece* newPiece);
