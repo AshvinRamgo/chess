@@ -24,7 +24,7 @@ bool Pawn::move(std::string position, std::string destination) {
         return true;
     }
 
-    if (dy == 2 && dx == 0 && !hasMoved) {
+    if (dy == 2 && dx == 0 && !hasMoved && (position[1] == '2' || position[1] == '7')) {
         hasMoved = true;
         return true;
     }

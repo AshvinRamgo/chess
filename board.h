@@ -11,7 +11,7 @@ private:
     std::vector<std::string> move_history;
     Piece* lastMovedPiece;  
 
-    bool isSquareUnderAttack(const std::string& position, char attackerColor) const;
+    bool isSquareUnderAttack(const std::string& position, char attackerColor);
 
 public:
     char player;
@@ -23,10 +23,10 @@ public:
     bool valid(std::string pos);
     char view(const std::string& position) const;
     bool move(const std::string& before, const std::string& after, char promotion = '\0');
-    bool check();
+    bool check(char KingColor);
     bool checkmate(char kingColor) /*const*/;
     bool stalemate(char kingColor) ;
-    void undo();
+    std::string undo();
     bool replacePiece(std::string position, char piece);
     bool isPathClear(int startX, int startY, int endX, int endY) const;
     Piece* getLastMovedPiece() const {return lastMovedPiece;}; 

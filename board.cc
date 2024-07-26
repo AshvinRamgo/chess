@@ -97,8 +97,8 @@ bool Board::move(const std::string& before, const std::string& after, char promo
     int before_col = before[0] - 'a';
     int after_row = '8' - after[1];
     int after_col = after[0] - 'a';
-    
-
+    char from_piece = view(before);
+    char dest_piece = view(after);
 
     Piece* toMove = board[before_row][before_col];
     if (board[before_row][before_col] && board[before_row][before_col]->getColor() == (player - 'a' + 'A') && board[before_row][before_col]->move(before, after) && (!board[after_row][after_col] || board[before_row][before_col]->getColor() != board[after_row][after_col]->getColor())) {
@@ -107,6 +107,7 @@ bool Board::move(const std::string& before, const std::string& after, char promo
         board[before_row][before_col] = temp;
         move_history.push_back(before + after + promotion);
         lastMovedPiece = board[after_row][after_col];*/
+        move_history.push_back(before + after + from_piece + dest_piece + promotion + ' ');
         if (board[after_row][after_col]) {
             delete board[after_row][after_col];
         }
@@ -141,15 +142,16 @@ bool Board::move(const std::string& before, const std::string& after, char promo
     return false;
 }
 
-bool Board::isSquareUnderAttack(const std::string& position, char attackerColor) const {
+bool Board::isSquareUnderAttack(const std::string& position, char attackerColor) {
     // Iterate over all pieces of the specified attacker color and check if any of them can move to the specified position
     for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
             std::string from = "";
             from += 'a' + j;
             from += '8' - i;
-            if (board[i][j] && board[i][j]->getColor() == attackerColor) {
+            if (board[i][j] && board[i][j]->getColor() == attackerColor - 'a' + 'A') {
                 if (board[i][j]->move(from, position)) {
+                    undo();
                     return true;
                 }
             }
@@ -158,29 +160,30 @@ bool Board::isSquareUnderAttack(const std::string& position, char attackerColor)
     return false;
 }
 
-bool Board::check() {
+bool Board::check(char KingColor) {
+    if (KingColor >= 'A' && KingColor <= 'Z') {
+        KingColor = KingColor - 'A' + 'a';
+    }
     std::string KingPosition = "";
-    char KingColour = ' ';
     for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
             std::string from = "";
             from += 'a' + j;
             from += '8' - i;
-            if (board[i][j] && board[i][j]->getType() == 'K' ) {
-                KingPosition = from;
-                KingColour = 'W'; 
+            if (view(from) == 'K' && 'w' == KingColor ) {
+                KingPosition = from; 
             }
-            if (board[i][j] && board[i][j]->getType() == 'k' ) {
+            if (view(from) == 'k' && 'b' == KingColor ) {
                 KingPosition = from;
-                KingColour = 'B'; 
             }
         }
     }
-    char attackerColor = (KingColour == 'W') ? 'B' : 'W';
+    char attackerColor = (KingColor == 'w') ? 'b' : 'w';
     return isSquareUnderAttack(KingPosition, attackerColor);
-}\
+}
 
 bool Board::checkmate(char kingColor) /*const*/ {
+    /*
     std::string kingPosition;
     for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
@@ -222,10 +225,12 @@ bool Board::checkmate(char kingColor) /*const*/ {
             }
         }
     }
+    */
     return true;
 }
 
 bool Board::stalemate(char kingColor) {
+    /*
     std::string kingPosition;
     for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
@@ -238,6 +243,7 @@ bool Board::stalemate(char kingColor) {
     if (check()) {
         return false;
     }
+    
 
     // Check if there are any legal moves available for the king's color
     for (int i = 7; i >= 0; --i) {
@@ -257,14 +263,31 @@ bool Board::stalemate(char kingColor) {
             }
         }
     }
+*/
     return true;
 }
 
-void Board::undo() {
+std::string Board::undo() { // returns the position of the squares that needs to be rendered
     if (!move_history.empty()) {
         std::string last_move = move_history.back();
         move_history.pop_back();
         // Implement logic to undo the last move
+        // format of a move "FromDestFrompieceDestpiecePromotionSpecial", total 8 characters, special char can be 'E' for enpassant or 'C' for castle, otherwise ' '
+        // example "a2a3P   " or "a4b5Pp  "
+        std::string from = "";
+        std::string to = "";
+        from += last_move[0];
+        from += last_move[1];
+        to += last_move[2];
+        to += last_move[3];
+        if (last_move[7] == ' ') { // no special move, note the undo for promotion and non promotion is the same, since you don't care what it promoted to
+            // the from square must be empty for each undo
+            replacePiece(from, last_move[4]);
+            replacePiece(to, last_move[5]);
+        }
+        // more undos to be implemented
+        // if multiple games must clear history
+        return last_move.substr(0, 4);
     }
 }
 
@@ -391,24 +414,11 @@ bool Board::isValidSetup() {
     }
 
     // Check if either king is in check
-    std::string whiteKingPosition, blackKingPosition;
-    for (int i = 0; i < 8; ++i) {
-        for (int j = 0; j < 8; ++j) {
-            Piece* piece = board[i][j];
-            if (piece && piece->getType() == 'K') {
-                if (piece->getColor() == 'W') {
-                    whiteKingPosition = std::string(1, 'a' + j) + std::to_string(8 - i);
-                } else if (piece->getColor() == 'B') {
-                    blackKingPosition = std::string(1, 'a' + j) + std::to_string(8 - i);
-                }
-            }
-        }
-    }
-
-    if (check()) {
+    
+    if (check('w') || check('b')) {
         return false;
     }
-
+    
     // If all checks passed, the setup is valid
     return true;
 }

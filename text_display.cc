@@ -2,12 +2,10 @@
 Text_Display::Text_Display(const Board& b): board{b} {}
 void Text_Display::render() {
     std::cout << WRAPPER;
-    for (int i = 0; i < 10; i++) {
-        std::cout << '-';
-    }
-    std::cout << '\n';
+    std::cout << "  a b c d e f g h\n";
+    std::cout << " +-----------------+\n";
     for (int row = 8; row > 0; row--) {
-        std::cout << '|';
+        std::cout << row << '|';
         for (int column = 0; column < 8; column++) { 
             std::string pos = "";
             pos += ('a' + column);
@@ -20,14 +18,13 @@ void Text_Display::render() {
                     piece = ' ';
                 }
             }
-            std::cout << piece;
+            std::cout << piece << ' ';
         }
-        std::cout << "|\n";
+        std::cout << '|' << row << "\n";
     }
-    for (int i = 0; i < 10; i++) {
-        std::cout << '-';
-    }
-    std::cout << '\n' << WRAPPER << '\n';
+    std::cout << " +-----------------+\n";
+    std::cout << "  a b c d e f g h\n";
+    std::cout << WRAPPER << '\n';
 }
 
 void Text_Display::score(int black, int white) {

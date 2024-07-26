@@ -2,6 +2,7 @@
 #include <cstdlib>  // for std::rand
 #include "computer.h"
 #include "board.h"
+
 /*
 // Helper function to generate all possible moves
 std::vector<std::string> Computer::generateAllMoves(Board *board, char color) {
@@ -11,7 +12,8 @@ std::vector<std::string> Computer::generateAllMoves(Board *board, char color) {
         for (char j = '1'; j <= '8'; ++j) {
             std::string from = std::string() + i + j;
             // If the square is not empty and contains a piece of the computer's color
-            if (!board->view(from).empty() && board->view(from)[0] == color) {
+            char f = board->view(from);
+            if (f != ' ' && ((f >= 'A' && f <= 'Z' && color == 'w') || (f >= 'a' && f <= 'z' && color == 'b'))) {
                 // Loop over all squares to which this piece might move
                 for (char k = 'a'; k <= 'h'; ++k) {
                     for (char l = '1'; l <= '8'; ++l) {
@@ -21,7 +23,7 @@ std::vector<std::string> Computer::generateAllMoves(Board *board, char color) {
                             // If the move is legal, add it to the list of possible moves
                             allMoves.push_back(from + to);
                             // Undo the move
-                            board->undo();
+                            board->undo();         //NOT IMPLEMENTED
                         }
                     }
                 }
@@ -39,15 +41,16 @@ int Computer::evaluateMove(Board *board, std::string move, char color) {
     std::string to = move.substr(2, 2);
 
     // Get the piece at the 'to' position
-    std::string capturedPiece = board->view(to);
+    char capturedPiece = board->view(to);
 
     // Initialize the score for the move
     int score = 0;
 
     // If the move captures an opponent's piece, increase the score
-    if (!capturedPiece.empty() && capturedPiece[0] != color) {
+    if (capturedPiece != ' ' && ((capturedPiece >= 'A' && capturedPiece <= 'Z' && color != 'w') || (capturedPiece >= 'a' && capturedPiece <= 'z' && color != 'b'))) {
         // Increase the score based on the type and value of the captured piece
-        char pieceType = capturedPiece[1];
+        char pieceType = capturedPiece;
+        if (pieceType <= 'z' && pieceType >= 'a') {pieceType = pieceType - 'a' + 'A';}
         switch (pieceType) {
             case 'P': score += 10; break;  // Pawn
             case 'N': score += 30; break;  // Knight
@@ -170,5 +173,4 @@ std::string Computer::level3() {
 //  maximizes the minimum value of the opponent’s possible following moves.
 // Maximizing and Minimizing Player: In the context of your chess game, the computer is the maximizing player and the opponent is the minimizing player. 
 // The computer tries to maximize its score, while the opponent tries to minimize the computer’s score.
-
 */

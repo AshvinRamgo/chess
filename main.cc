@@ -76,8 +76,10 @@ int main() {
 		        char promotion = 0;
 		        std::cin >> pos >> dest;
 		        if (std::cin.peek() == ' '){
-			    std::cin >> promotion;
-		        }
+			        std::cin >> promotion;
+		        } else {
+                    promotion = ' ';
+                }
 		        if (!chessBoard.move(pos, dest, promotion)){
 			        std::cout << "invalid move" << std::endl;
 		        } else {
@@ -125,7 +127,10 @@ int main() {
             }
             else if (input == "undo") {
                 // Undo a move
-                chessBoard.undo(); // not implemented yet
+                std::string pos = chessBoard.undo();
+                chessBoard.player = next(chessBoard.player);
+                textDisplay.render();
+                graphicalDisplay.render(pos[1] - '0', pos[0] - 'a' + 1, pos[3] - '0', pos[2] - 'a' + 1);
             }
             else if (input == "resign") {
                 // Resign the game
