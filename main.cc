@@ -68,8 +68,14 @@ int main() {
                 std::cin >> p1;
                 std::cin >> p2;
                 */
+                if (chessBoard.player == 'w') {
+                    std::cout << "\nWhite First\n";
+                } else {
+                    std::cout << "\nBlack First\n";
+                }
                 graphicalDisplay.draw_board();
                 textDisplay.render();
+                
                 // chessBoard.setPlayers(p1, p2);
             } else if (input == "move"){
 		        std::string pos, dest;
@@ -83,45 +89,52 @@ int main() {
 		        if (!chessBoard.move(pos, dest, promotion)){
 			        std::cout << "invalid move" << std::endl;
 		        } else {
-			    // render	
-			    textDisplay.render();
-			    graphicalDisplay.render(pos[1] - '0', pos[0] - 'a' + 1, dest[1] - '0', dest[0] - 'a' + 1);
-			// check for checkmate, stalemate
-			/* if (chessBoard.checkmate(next(player) + 'A' - 'a')) {
-			    if (player == 'w') {
-				    wwin += 1;
-				    textDisplay.checkmate('w');
-				    graphicalDisplay.checkmate('w');
-				    sleep(1);
-				    textDisplay.score(bwin, wwin);
-				    graphicalDisplay.score(bwin, wwin);
-				    sleep(2);
-				    chessBoard.initialize();
-				    break;
-			    }
-			    bwin+= 1;
-			    textDisplay.checkmate('b');
-			    graphicalDisplay.checkmate('b');
-			    sleep(1);
-			    textDisplay.score(bwin, wwin);
-			    graphicalDisplay.score(bwin, wwin);
-			    sleep(2);
-			    chessBoard.initialize();
-			    break;
-			} else if (chessBoard.stalemate(next(player) + 'A' - 'a')) {
-			    textDisplay.stalemate();
-			    graphicalDisplay.stalemate();
-			    sleep(1);
-			    textDisplay.score(bwin, wwin);
-			    graphicalDisplay.score(bwin, wwin);
-			    sleep(2);
-			    chessBoard.initialize();
-			    break;
+			        // render	
+			        textDisplay.render();
+			        graphicalDisplay.render(pos[1] - '0', pos[0] - 'a' + 1, dest[1] - '0', dest[0] - 'a' + 1);
+			        // check for checkmate, stalemate
+                    //std::cout << chessBoard.checkmate(next(chessBoard.player)) << std::endl;
+                    
+			        if (chessBoard.checkmate(next(chessBoard.player))) {
+			            if (chessBoard.player == 'w') {
+				            wwin += 1;
+				            textDisplay.checkmate('w');
+				            graphicalDisplay.checkmate('w');
+				            sleep(1);
+				            textDisplay.score(bwin, wwin);
+				            graphicalDisplay.score(bwin, wwin);
+				            sleep(2);
+				            chessBoard.initialize();
+				            break;
+			            }
+			            bwin+= 1;
+			            textDisplay.checkmate('b');
+			            graphicalDisplay.checkmate('b');
+			            sleep(1);
+			            textDisplay.score(bwin, wwin);
+			            graphicalDisplay.score(bwin, wwin);
+			            sleep(2);
+			            chessBoard.initialize();
+			            break;
+			        } else if (chessBoard.stalemate(next(chessBoard.player))) {
+			            textDisplay.stalemate();
+			            graphicalDisplay.stalemate();
+			            sleep(1);
+			            textDisplay.score(bwin, wwin);
+			            graphicalDisplay.score(bwin, wwin);
+			            sleep(2);
+			            chessBoard.initialize();
+			            break;
             
-			} else {
-			    player = next(player);
-			} */
-                    chessBoard.player = next(chessBoard.player);
+			        } else {
+                        
+                        chessBoard.player = next(chessBoard.player);
+                        if (chessBoard.player == 'w') {
+                            std::cout << "\nWhite Next\n";
+                        } else {
+                            std::cout << "\nBlack Next\n";
+                        }
+                    }
 			// switch players
 		        }
             }

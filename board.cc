@@ -92,7 +92,7 @@ char Board::view(const std::string& position) const {
     return ' ';
 }
 
-bool Board::move(const std::string& before, const std::string& after, char promotion) {
+bool Board::move(const std::string& before, const std::string& after, char promotion, bool CHECK) { // the CHECK variable is for detecting checks
     int before_row = '8' - before[1];
     int before_col = before[0] - 'a';
     int after_row = '8' - after[1];
@@ -136,13 +136,19 @@ bool Board::move(const std::string& before, const std::string& after, char promo
             }
         }
 
-        //delete temp;
+        if (CHECK && check(player)) {
+            undo();
+            return false;
+        } 
+        
         return true;
     }
     return false;
 }
 
 bool Board::isSquareUnderAttack(const std::string& position, char attackerColor) {
+    char temp = player;
+    player = attackerColor; // switch the player to the attacker first
     // Iterate over all pieces of the specified attacker color and check if any of them can move to the specified position
     for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
@@ -150,13 +156,15 @@ bool Board::isSquareUnderAttack(const std::string& position, char attackerColor)
             from += 'a' + j;
             from += '8' - i;
             if (board[i][j] && board[i][j]->getColor() == attackerColor - 'a' + 'A') {
-                if (board[i][j]->move(from, position)) {
+                if (move(from, position, '\0', false)) {
                     undo();
+                    player = temp;
                     return true;
                 }
             }
         }
     }
+    player = temp;
     return false;
 }
 
@@ -183,87 +191,79 @@ bool Board::check(char KingColor) {
 }
 
 bool Board::checkmate(char kingColor) /*const*/ {
-    /*
-    std::string kingPosition;
-    for (int i = 7; i >= 0; --i) {
-        for (int j = 0; j < 8; ++j) {
-            if (board[i][j] && board[i][j]->getColor() == kingColor && board[i][j]->getType() == 'K') {
-                kingPosition = std::string(1, 'a' + j) + std::to_string(i + 1);
-                break;
-            }
-        }
+    char temp = player;
+    player = kingColor; // switch the player to the attacker first
+    if (kingColor >= 'A' && kingColor <= 'Z') {
+        kingColor = kingColor - 'A' + 'a';
     }
-    if (!check()) {
+    if (!check(kingColor)) {
+        player = temp;
         return false;
     }
 
-    // Check if any legal move can remove the check
+    // Check if any legal move
     for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
-            if (board[i][j] && board[i][j]->getColor() == kingColor) {
-                std::string currentPos = std::string(1, 'a' + j) + std::to_string(i + 1);
-                for (int r = 7; r >= 0; --r) {
-                    for (int c = 0; c < 8; ++c) {
-                        std::string newPos = std::string(1, 'a' + c) + std::to_string(r + 1);
-                        Piece* temp = board[r][c];
-                        std::string from = "";
-                        from += 'a' + j;
-                        from += '8' - i;
-                        if (board[i][j]->move(from, newPos)) {
-                            board[r][c] = board[i][j];
-                            board[i][j] = nullptr;
-                            if (!check()) {
-                                board[i][j] = board[r][c];
-                                board[r][c] = temp;
-                                return false;
-                            }
-                            board[i][j] = board[r][c];
-                            board[r][c] = temp;
-                        }
+            //std::string currentPos = std::string(1, 'a' + j) + std::to_string(8 - i);
+            std::string currentPos = "";
+            currentPos += 'a' + j;
+            currentPos += '8' - i;
+            for (int r = 7; r >= 0; --r) {
+                for (int c = 0; c < 8; ++c) {
+                    std::string newPos = "";
+                    newPos += 'a' + c;
+                    newPos += '8' - r;
+                    //std::string newPos = std::string(1, 'a' + c) + std::to_string(8 - r);
+                    if (move(currentPos, newPos)) {
+                        undo();
+                        player = temp;
+                        return false;
                     }
                 }
             }
         }
     }
-    */
+    player = temp;
     return true;
 }
-
-bool Board::stalemate(char kingColor) {
-    /*
-    std::string kingPosition;
-    for (int i = 7; i >= 0; --i) {
-        for (int j = 0; j < 8; ++j) {
-            if (board[i][j] && board[i][j]->getColor() == kingColor && board[i][j]->getType() == 'K') {
-                kingPosition = std::string(1, 'a' + j) + std::to_string(i + 1);
-                break;
-            }
-        }
-    }
-    if (check()) {
-        return false;
-    }
+    
     
 
-    // Check if there are any legal moves available for the king's color
+
+bool Board::stalemate(char kingColor) /*const*/ {
+    char temp = player;
+    player = kingColor; // switch the player to the attacker first
+    if (kingColor >= 'A' && kingColor <= 'Z') {
+        kingColor = kingColor - 'A' + 'a';
+    }
+    if (check(kingColor)) {
+        player = temp;
+        return false;
+    }
+
+    // Check if any legal move
     for (int i = 7; i >= 0; --i) {
         for (int j = 0; j < 8; ++j) {
-            if (board[i][j] && board[i][j]->getColor() == kingColor) {
-                for (int r = 7; r >= 0; --r) {
-                    for (int c = 0; c < 8; ++c) {
-                        std::string newPos = std::string(1, 'a' + c) + std::to_string(r + 1);
-                        std::string from = "";
-                        from += 'a' + j;
-                        from += '8' - i;
-                        if (board[i][j]->move(from, newPos)) {
-                            return false;
-                        }
+            //std::string currentPos = std::string(1, 'a' + j) + std::to_string(8 - i);
+            std::string currentPos = "";
+            currentPos += 'a' + j;
+            currentPos += '8' - i;
+            for (int r = 7; r >= 0; --r) {
+                for (int c = 0; c < 8; ++c) {
+                    std::string newPos = "";
+                    newPos += 'a' + c;
+                    newPos += '8' - r;
+                    //std::string newPos = std::string(1, 'a' + c) + std::to_string(8 - r);
+                    if (move(currentPos, newPos)) {
+                        undo();
+                        player = temp;
+                        return false;
                     }
                 }
             }
         }
     }
-*/
+    player = temp;
     return true;
 }
 

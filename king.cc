@@ -29,7 +29,7 @@ bool King::move(std::string position, std::string destination) {
             moved = true;
             return true;
         } */
-        return true;
+        return false;
     }
 
     // If the move is not to an adjacent square or a valid castling move, the move is invalid
