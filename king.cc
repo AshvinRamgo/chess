@@ -18,7 +18,7 @@ bool King::move(std::string position, std::string destination) {
         moved = true;
         return true;
     }
-
+    /*
     // Check for castling move
     if (!moved && y1 == y2 && (x2 == x1 + 2 || x2 == x1 - 2)) {
         // Check if the path is clear and the rook has not moved
@@ -28,10 +28,10 @@ bool King::move(std::string position, std::string destination) {
             position = destination;
             moved = true;
             return true;
-        } */
+        } 
         return false;
-    }
-
+    } 
+    */
     // If the move is not to an adjacent square or a valid castling move, the move is invalid
     return false;
 }

@@ -107,3 +107,4 @@ void Graphical_Display::stalemate() {
     w.fillRectangle(COVER[0], COVER[1], COVER[2], COVER[3], Xwindow::White);
     w.drawString(MESSAGE[0], MESSAGE[1], STALEMATE);
 }
+

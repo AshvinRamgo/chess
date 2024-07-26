@@ -10,8 +10,8 @@ public:
     King(char color, const Board& b);
     bool move(std::string position, std::string destination);
     bool hasMoved();
-private:
     bool moved;
+    
 };
 
 #endif // KING_H

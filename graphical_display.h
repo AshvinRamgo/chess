@@ -22,3 +22,4 @@ class Graphical_Display {
         void checkmate(char color);
         void stalemate();
 };
+

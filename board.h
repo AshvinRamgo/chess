@@ -22,6 +22,7 @@ public:
     void clear();
     bool valid(std::string pos);
     char view(const std::string& position) const;
+    bool castling(std::string kingPos, std::string rookPos);
     bool move(const std::string& before, const std::string& after, char promotion = '\0', bool CHECK = true);
     bool check(char KingColor);
     bool checkmate(char kingColor) /*const*/;

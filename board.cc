@@ -92,7 +92,11 @@ char Board::view(const std::string& position) const {
     return ' ';
 }
 
+
 bool Board::move(const std::string& before, const std::string& after, char promotion, bool CHECK) { // the CHECK variable is for detecting checks
+    if (view(before) == 'K' && view(after) == 'R' || view(before) == 'k' && view(after) == 'r') {
+        return castling(before, after);
+    }
     int before_row = '8' - before[1];
     int before_col = before[0] - 'a';
     int after_row = '8' - after[1];
@@ -144,6 +148,69 @@ bool Board::move(const std::string& before, const std::string& after, char promo
         return true;
     }
     return false;
+}
+
+bool Board::castling(std::string kingPos, std::string rookPos) {
+    // Convert positions to board indices
+    int kingRow = '8' - kingPos[1];
+    int kingCol = kingPos[0] - 'a';
+    int rookRow = '8' - rookPos[1];
+    int rookCol = rookPos[0] - 'a';
+
+    // Check if the king and rook are of the same color and have not moved
+    if (board[kingRow][kingCol]->getColor() - 'A' + 'a' != player ||
+        board[rookRow][rookCol]->getColor() - 'A' + 'a' != player) 
+        // To implement
+        // board[kingRow][kingCol]->hasMoved() board[rookRow][rookCol]->hasMoved()
+        {
+        return false;
+    }
+
+    // Check if the path between the king and the rook is clear
+    if (!isPathClear(kingRow, kingCol, rookRow, rookCol)) {
+        return false;
+    }
+
+    // Check if the king is in check in its starting position, final position, or the position in between
+    if (check(player)) {
+        return false;
+    }
+
+    // Move the king and the rook
+    char king_h;
+    char rook_h;
+    if (rookPos[0] == 'a') {
+        king_h = 'c';
+        rook_h = 'd';
+    } else {
+        king_h = 'g';
+        rook_h = 'f';
+    }
+    std::string kingTo = "";
+    std::string rookTo = "";
+    kingTo += king_h;
+    kingTo += kingPos[1];
+    rookTo += rook_h;
+    rookTo += rookPos[1];
+    replacePiece(kingPos, ' ');
+    replacePiece(rookPos, ' ');
+    if (player == 'w') {
+        replacePiece(kingTo, 'K');
+        replacePiece(rookTo, 'R');
+    } else {
+        replacePiece(kingTo, 'k');
+        replacePiece(rookTo, 'r');
+    }
+    std::string history = kingPos + king_h + kingPos[1] + view(kingTo) + "  " + 'C';
+    move_history.push_back(history);
+    // Check if the king is in check after the move
+    if (check(player)) {
+        // Undo the move
+        undo();
+        return false;
+    }
+
+    return true;
 }
 
 bool Board::isSquareUnderAttack(const std::string& position, char attackerColor) {
@@ -273,7 +340,7 @@ std::string Board::undo() { // returns the position of the squares that needs to
         move_history.pop_back();
         // Implement logic to undo the last move
         // format of a move "FromDestFrompieceDestpiecePromotionSpecial", total 8 characters, special char can be 'E' for enpassant or 'C' for castle, otherwise ' '
-        // example "a2a3P   " or "a4b5Pp  "
+        // example "a2a3P   " or "a4b5Pp  " or "e1g1K  C"
         std::string from = "";
         std::string to = "";
         from += last_move[0];
@@ -284,6 +351,28 @@ std::string Board::undo() { // returns the position of the squares that needs to
             // the from square must be empty for each undo
             replacePiece(from, last_move[4]);
             replacePiece(to, last_move[5]);
+        } else if (last_move[7] == 'C') {
+            
+            std::string castle_from = "";
+            std::string castle_to = "";
+            if (to[0] == 'g') {
+                castle_from += 'h';
+                castle_to += 'f';
+            } else {
+                castle_from += 'a';
+                castle_to += 'd';
+            }
+            castle_from += from[1];
+            castle_to += from[1];
+            replacePiece(from, last_move[4]);
+            replacePiece(to, last_move[5]);
+            if (last_move[4] == 'K') {
+                replacePiece(castle_from, 'R');
+            } else {
+                replacePiece(castle_from, 'r');
+            }
+            replacePiece(castle_to, ' ');
+            return from + to + castle_from + castle_to;
         }
         // more undos to be implemented
         // if multiple games must clear history

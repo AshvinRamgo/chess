@@ -91,6 +91,19 @@ int main() {
 		        } else {
 			        // render	
 			        textDisplay.render();
+                    if (pos == "e1") {
+                        if (dest == "h1") {
+                            graphicalDisplay.render(1, 6, 1, 7);
+                        } else if (dest == "a1") {
+                            graphicalDisplay.render(1, 3, 1, 4);
+                        }
+                    } else if (pos == "e8") {
+                        if (dest == "h8") {
+                            graphicalDisplay.render(8, 6, 8, 7);
+                        } else if (dest == "a8") {
+                            graphicalDisplay.render(8, 3, 8, 4);
+                        }
+                    }
 			        graphicalDisplay.render(pos[1] - '0', pos[0] - 'a' + 1, dest[1] - '0', dest[0] - 'a' + 1);
 			        // check for checkmate, stalemate
                     //std::cout << chessBoard.checkmate(next(chessBoard.player)) << std::endl;
@@ -143,7 +156,11 @@ int main() {
                 std::string pos = chessBoard.undo();
                 chessBoard.player = next(chessBoard.player);
                 textDisplay.render();
-                graphicalDisplay.render(pos[1] - '0', pos[0] - 'a' + 1, pos[3] - '0', pos[2] - 'a' + 1);
+                int index = 0;
+                while (index < pos.length()) {
+                    graphicalDisplay.render_square(pos[index + 1] - '0', pos[index] - 'a' + 1);
+                    index += 2;
+                }
             }
             else if (input == "resign") {
                 // Resign the game
@@ -225,3 +242,4 @@ int main() {
 
     return 0;
 }
+
